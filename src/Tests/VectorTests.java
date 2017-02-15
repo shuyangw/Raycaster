@@ -28,5 +28,11 @@ public class VectorTests {
 		assertEquals(Math.toRadians(45), testVec1.getDir(), err);
 		assertEquals(5.0, testVec1.getMag(), err);
 	}
+	
+	@Test
+	public void idk(){
+		Vector vec = new Vector(1,1);
+		vec.getUnit().print();
+	}
 
 }

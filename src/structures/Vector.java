@@ -4,7 +4,6 @@ public class Vector {
 	public double x;
 	public double y;
 	
-	//Blank vector constructor
 	public Vector(){
 		this.x = 0;
 		this.y = 0;
@@ -46,7 +45,27 @@ public class Vector {
 		return Math.atan(y/x);
 	}
 	
+	//Performs vector multiplication with another vector v
 	public double mult(Vector v){
 		return this.x * v.x + this.y * v.y;
+	}
+	
+	public boolean isPerp(Vector v){
+		if(this.mult(v) == 0){
+			return true;
+		}
+		else{
+			//DO NOT DELETE LINE BELOW, NEED FOR SOME REASON WHY JAVA WHY
+			v.print();
+			return false;
+		}
+	}
+	
+	public Vector getUnit(){
+		return new Vector(this.x/this.getMag(), this.y/this.getMag());
+	}
+	
+	public void print(){
+		System.out.println("x: "+this.x+", y: "+this.y);
 	}
 }
