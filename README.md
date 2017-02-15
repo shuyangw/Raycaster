@@ -2,6 +2,12 @@
 In progress simple 2.5D raycaster.
 
 ## Changelog:
+
+###
+2/14/17
+Fixed the problem with only drawing 2 lines. Will now correctly draw the map given a start position.
+However, it's necessary to specify the initial position and direction vector within the code for a new view. Movement functionality
+is not added yet.
 ###
 2/4/17:
 #####
