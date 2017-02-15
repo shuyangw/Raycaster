@@ -1,5 +1,9 @@
 # Raycaster
 In progress simple 2.5D raycaster.
+###
+Introduction:
+####
+Raycasting is the action of drawing vectors or rays in order to draw a 3D-like view with a 2D map. This implementation of it uses the Digital differential analyzer algorithm to continuously draw views.
 
 ## Changelog:
 
