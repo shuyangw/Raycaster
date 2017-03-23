@@ -71,6 +71,7 @@ public class Vector
 		}
 	}
 	
+	//Returns the unit vector associated with the current direction of the vector
 	public Vector getUnit()
 	{
 		return new Vector(this.x/this.getMag(), this.y/this.getMag());
