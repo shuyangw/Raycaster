@@ -6,12 +6,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.LinkedList;
 
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
 @SuppressWarnings("serial")
 public class MainClass extends JComponent
@@ -22,32 +24,26 @@ public class MainClass extends JComponent
 	static Vector playerPos;
 	static Vector playerDir;
 	static Vector cameraDir;
-	static int width = 800;
-	static int height = 600;
-	static double rotSpeed = 3.0; // ??? TODO
+	
+	//Defines the dimensions of the window 
+	static int width = 1200;
+	static int height = 800;
+	static double rotSpeed = 0.1;
 
-	final static int[][] map = 
-		{   { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, 
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
+	//map array
+	static int[][] map;
+	
+	static JFrame frame;
 
-	public void addLine(boolean isVert, int x1, int x2, int x3, int x4, Color col) throws Exception
+	public void addLine(boolean isVert, int x1, int x2, int x3, int x4, Color color) throws Exception
 	{
-		lines.add(new Line(isVert, x1, x2, x3, x4, col));
+		lines.add(new Line(isVert, x1, x2, x3, x4, color));
 		repaint();
 	}
 
-	public void clearLines()
+	public static void clearLines()
 	{
 		lines.clear();
-		repaint();
 	}
 
 	@Override
@@ -77,14 +73,55 @@ public class MainClass extends JComponent
 
 	}
 
+	/*
+	 * 	Draws a simple map with outer edges as walls and an empty interior
+	 * 	EXAMPLE:
+	 * 	When setupBasicMap(10,10) is called, the following map is created:
+	 * 		{   { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+	 *			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+ 	 *			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+ 	 *			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 }, 
+	 *			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+	 *			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+	 *			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+	 *			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+	 *			{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+	 *			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } };
+	 * 
+	 */
+	private static void setupBasicMap(int horizLength, int height)
+	{
+		map = new int[horizLength][height];
+		for(int i = 0; i < horizLength; i++)
+		{
+			for(int j = 0; j < height; j++){
+				//Runs if our loop reaches a border of the desired map, puts a wall, denoted by a positive integer
+				if(i == 0 || j == 0 || i == horizLength-1 || j == height-1)
+				{
+					map[i][j] = 1;
+				}
+				//Otherwise fills map with empty space
+				else
+				{
+					map[i][j] = 0;
+				}
+			}
+		}
+	}
+	
 	public static void main(String[] args) throws Exception
 	{
 		setupFrame();
-		playerPos = new Vector(1, 1); // start position of player
-		playerDir = new Vector(1.0 / Math.sqrt(2), 1.0 / Math.sqrt(2)); // direction
-																		// vector
+//		promptInputs();
+		basicSetup();
+		setupKeyMap();
+//		setupBasicMap(20,20);
+		playerPos = new Vector(2, 2); // start position of player
+		playerDir = new Vector(1.0 / Math.sqrt(2), 1.0 / Math.sqrt(2)); // direction vector
 		cameraDir = new Vector(0, 0.66); // camera plane vector
-
+		
+//		setupBG();
+		
 		// GameLoop
 		while (true)
 		{
@@ -174,7 +211,7 @@ public class MainClass extends JComponent
 				switch (map[currPosX][currPosY])
 				{
 				case 1:
-					currColor = Color.YELLOW;
+					currColor = Color.RED;
 					break;
 				case 2:
 					currColor = Color.ORANGE;
@@ -193,72 +230,130 @@ public class MainClass extends JComponent
 		}
 	}
 
-	static void setupFrame()
+	//Sets up window
+	private static void setupFrame()
 	{
-		JFrame frame = new JFrame();
-//		JPanel panel = new JPanel();
+		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.black);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("this is so bad i don't even lmao");
+
 		comp = new MainClass();
 		comp.setPreferredSize(new Dimension(width, height));
-		frame.getContentPane().add(comp, BorderLayout.CENTER);
-//		frame.getContentPane().add(panel);
-//		panel.addKeyListener(new KeyListener()
-//		{
-//			@Override
-//			public void keyPressed(KeyEvent e) 
-//			{
-//				for(int i = 0; i < 10; i++) System.out.println("THING IS PRINTED");
-//				switch(e.getKeyCode())
-//				{
-//					case KeyEvent.VK_W:
-//						if(map[(int)(playerPos.x+playerDir.x)][(int)(playerPos.y)] <= 0)
-//						{
-//							playerPos.x += playerDir.x;
-//						}
-//						if(map[(int)(playerPos.x)][(int)(playerPos.y+playerDir.y)] <= 0)
-//						{
-//							playerPos.y += playerDir.y;
-//						}
-//						break;
-//					case KeyEvent.VK_S:	
-//						if(map[(int)(playerPos.x-playerDir.x)][(int)(playerPos.y)] <= 0)
-//						{
-//							playerPos.x -= playerDir.x;
-//						}
-//						if(map[(int)(playerPos.x)][(int)(playerPos.y-playerDir.y)] <= 0)
-//						{
-//							playerPos.y -= playerDir.y;
-//						}
-//						break;
-//					case KeyEvent.VK_D:	
-//						double oldXDir = playerDir.x;
-//						playerDir.x = playerDir.x*Math.cos((-1)*rotSpeed)-playerDir.y*Math.sin((-1)*rotSpeed);
-//						playerDir.y = oldXDir*Math.sin((-1)*rotSpeed)+playerDir.y*Math.cos((-1)*rotSpeed);
-//						
-//						double oldXPlane = cameraDir.x;
-//						cameraDir.x = cameraDir.x*Math.cos(rotSpeed)-cameraDir.y*Math.sin(rotSpeed);
-//						cameraDir.y = oldXPlane*Math.sin(rotSpeed)+cameraDir.y*Math.cos(rotSpeed);
-//					case KeyEvent.VK_A:	
-//					default: break;
-//				}
-//			}
-//			
-//			@Override
-//			public void keyReleased(KeyEvent arg0)
-//			{
-//				// UNUSED
-//			}
-//
-//			@Override
-//			public void keyTyped(KeyEvent arg0)
-//			{
-//				// UNUSED
-//			}
-//
-//		});
 		
+		frame.getContentPane().add(comp, BorderLayout.CENTER);
 		frame.pack();
 		frame.setVisible(true);
 	}
+
+	//Method for prompting input dimensions of map
+	@SuppressWarnings("unused")
+	private static void promptInputs()
+	{
+		Object result = JOptionPane.showInputDialog(frame, "Enter map dimensions in the form \"length,height\"");
+		System.out.println(result.toString());
+		//Check if input is valid
+		String inputStr = result.toString().replaceAll(" ", "");
+//		while(inputStr.length() != 3)
+//		{
+//			result = JOptionPane.showInputDialog(frame, "Enter again map dimensions in the form \"length,height\"");
+//		}
+		
+		int length = Integer.parseInt(Character.toString(inputStr.charAt(0)));
+		int height = Integer.parseInt(Character.toString(inputStr.charAt(2)));
+		setupBasicMap(length, height);
+	}
+	
+	private static void basicSetup()
+	{
+		setupBasicMap(15,15);
+	}
+	
+	//Uses Java KeyBindings to setup key mappings
+	private static void setupKeyMap()
+	{
+	    InputMap im = comp.getInputMap();
+	    ActionMap am = comp.getActionMap();
+
+	    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), "D");
+	    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), "A");
+	    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), "W");
+	    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), "S");
+
+	    am.put("D", new MoveAction("D"));
+	    am.put("A", new MoveAction("A"));
+	    am.put("W", new MoveAction("W"));
+	    am.put("S", new MoveAction("S"));
+	}
+	
+	//Handles rotation
+	public static void rotation(String dir) throws Exception
+	{
+		if(dir.equalsIgnoreCase("right"))
+		{
+			double oldXDir = playerDir.x;
+			playerDir.x = playerDir.x*Math.cos(rotSpeed)-playerDir.y*Math.sin(rotSpeed);
+			playerDir.y = oldXDir*Math.sin(rotSpeed)+playerDir.y*Math.cos(rotSpeed);
+			
+			double oldXPlane = cameraDir.x;
+			cameraDir.x = cameraDir.x*Math.cos(rotSpeed)-cameraDir.y*Math.sin(rotSpeed);
+			cameraDir.y = oldXPlane*Math.sin(rotSpeed)+cameraDir.y*Math.cos(rotSpeed);
+		}
+		else if(dir.equalsIgnoreCase("left"))
+		{
+			double oldXDir = playerDir.x;
+			playerDir.x = playerDir.x*Math.cos((-1)*rotSpeed)-playerDir.y*Math.sin((-1)*rotSpeed);
+			playerDir.y = oldXDir*Math.sin((-1)*rotSpeed)+playerDir.y*Math.cos((-1)*rotSpeed);
+			
+			double oldXPlane = cameraDir.x;
+			cameraDir.x = cameraDir.x*Math.cos((-1)*rotSpeed)-cameraDir.y*Math.sin((-1)*rotSpeed);
+			cameraDir.y = oldXPlane*Math.sin((-1)*rotSpeed)+cameraDir.y*Math.cos((-1)*rotSpeed);
+		}
+		
+		clearLines();
+	}
+	
+	public static void move(String dir) throws Exception
+	{
+		if(dir.equalsIgnoreCase("forwards"))
+		{
+			if(map[(int)(playerPos.x+playerDir.x)][(int)(playerPos.y)] <= 0)
+			{
+				playerPos.x += playerDir.x;
+			}
+			if(map[(int)(playerPos.x)][(int)(playerPos.y+playerDir.y)] <= 0)
+			{
+				playerPos.y += playerDir.y;
+			}
+		}
+		else if(dir.equalsIgnoreCase("backwards"))
+		{
+			if(map[(int)(playerPos.x-playerDir.x)][(int)(playerPos.y)] <= 0)
+			{
+				playerPos.x -= playerDir.x;
+			}
+			if(map[(int)(playerPos.x)][(int)(playerPos.y-playerDir.y)] <= 0)
+			{
+				playerPos.y -= playerDir.y;
+			}
+		}
+		
+		clearLines();
+	}
+	
+	//Unused method to draw a gray background
+		//Significantly decreases rendering time
+//		private static void setupBG() throws Exception
+//		{
+//			Color col = Color.DARK_GRAY;
+//			for(int i = 0; i < height/2; i++)
+//			{
+//				comp.addLine(false, 0, width-1-200, i, i, col);
+//			}
+//			col = Color.LIGHT_GRAY;
+//			for(int i = height/2; i < height; i++)
+//			{
+//				comp.addLine(false, 0, width-1-200, i, i, col);
+//			}
+//		}
 }

@@ -4,7 +4,13 @@ import java.awt.Color;
 
 import Exceptions.IllegalConstructorException;
 
-public class Line {
+/*
+ * Line class
+ * 
+ */
+
+public class Line 
+{
 	public boolean isVert;
 	public int x1;
 	public int x2;
@@ -12,16 +18,21 @@ public class Line {
 	public int y2;
 	public Color color;
 	
-	public Line(boolean isVert, int x1, int x2, int y1, int y2, Color color) throws Exception{
-		if(isVert && x1 != x2){
+	//Constructor checks if the input line is vertical and if the arguments comply with it
+	public Line(boolean isVert, int x1, int x2, int y1, int y2, Color color) throws Exception
+	{
+		if(isVert && x1 != x2)
+		{
 			throw new IllegalConstructorException("Boolean in constructor contradicts input x1 and x2 coordinates");
 		}
 		
-		if(isVert || x1 == x2){
+		if(isVert || x1 == x2)
+		{
 			this.x1 = x1;
 			this.x2 = x1;
 		}
-		else{
+		else
+		{
 			this.x1 = x1;
 			this.x2 = x2;
 		}
@@ -31,7 +42,9 @@ public class Line {
 		this.color = color;
 	}
 	
-	public void print(){
+	//Prints the start and end point of the line
+	public void print()
+	{
 		System.out.println("x1: "+this.x1+", y1: "+this.y1+" , x2:"+this.x2+" , y2: "+this.y2);
 	}
 }
